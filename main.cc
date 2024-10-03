@@ -1,7 +1,11 @@
 #include <iostream>
 #include <regex>
+//#include <mpi.h>
 
 using namespace std;
+
+int num_procs = 1;
+int proc_rank = 0;
 
 /// @brief Checks if a password meets Chipotle's password requirements as described in the main program. Uses regular expressions to test for validity.
 /// @param password string to be parsed and checked
@@ -38,7 +42,15 @@ int main(){
         2. At least one Uppercase
         3. At least one Lowercase
         4. At least one special character
+
+        mpicxx -Wall -Werror -O3
     */
+
+    // MPI_Init(NULL,NULL); //
+
+    // MPI_Comm_size(MPI_COMM_WORLD,&num_procs); //
+    // MPI_Comm_rank(MPI_COMM_WORLD,&proc_rank); //
+
     int count = 0;
     string password;
     while(cin >> password){
@@ -46,6 +58,10 @@ int main(){
             count++;
         }
     }
+    //if (debug) cout << "I am process " << proc_rank << " of " << num_procs << endl;
     printf("Valid passwords: %i\n", count);
+
+
+    // MPI_Finalize(); //
     exit(0);
 }
