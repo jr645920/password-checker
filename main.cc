@@ -1,38 +1,67 @@
 #include <iostream>
-#include <regex>
-//#include <mpi.h>
+//#include <regex>
 
 using namespace std;
-
-int num_procs = 1;
-int proc_rank = 0;
 
 /// @brief Checks if a password meets Chipotle's password requirements as described in the main program. Uses regular expressions to test for validity.
 /// @param password string to be parsed and checked
 /// @return boolean value that reflects the password's validity
-bool check(string& password){
-    regex capital("[A-Z]+");
-    regex lowercase("[a-z]+");
-    regex number("[0-9]+");
-    regex symbol("[~!@#$%^&*=+|/.,<>\\_-`\?()]+");
-    regex length("[^\n \t][^\n \t][^\n \t][^\n \t][^\n \t][^\n \t][^\n \t][^\n \t]+");
+bool check(string password){
+    //regex capital("[A-Z]+");
+    //regex lowercase("[a-z]+");
+    //regex number("[0-9]+");
+    //regex symbol("[~!@#$%^&*=+|/.,<>\\_-`\?()[]\";:]+");
+    //regex length("[^\n \t][^\n \t][^\n \t][^\n \t][^\n \t][^\n \t][^\n \t][^\n \t]+");
 
-    if(!regex_search(password, capital)){
+    // if(!regex_search(password, capital)){
+    //     return false;
+    // }
+    // if(!regex_search(password, lowercase)){
+    //     return false;
+    // }
+    // if(!regex_search(password, number)){
+    //     return false;
+    // }
+    // if(!regex_search(password, symbol)){
+    //     return false;
+    // }
+    // if(!regex_search(password, length)){
+    //     return false;
+    // }
+
+    bool upper = false;
+    bool lower = false;
+    bool number = false;
+    bool special = false;
+
+    if(password.length() < 8){
         return false;
     }
-    if(!regex_search(password, lowercase)){
+    for(long unsigned int i = 0; i < password.length(); i++){
+        if(!upper && isupper(password[i])){
+            upper = true;
+        }
+        else if(!lower && islower(password[i])){
+            lower = true;
+        }
+        else if(!number && isdigit(password[i])){
+            number = true;
+        }
+        // ~!@#$%^&*=+|/.,<>\\_-`\?()[]\";:
+        else if(!special && (password[i]=='~'||password[i]=='!'||password[i]=='@'||password[i]=='#'||password[i]=='$'||password[i]=='%'||password[i]=='^'||
+        password[i]=='&'||password[i]=='*'||password[i]=='='||password[i]=='+'||password[i]=='|'||password[i]=='/'||password[i]=='.'||password[i]==','||
+        password[i]=='<'||password[i]=='>'||password[i]=='\\'||password[i]=='_'||password[i]=='-'||password[i]=='`'||password[i]=='?'||password[i]=='('||
+        password[i]==')'||password[i]=='['||password[i]==']'||password[i]=='"'||password[i]==';'||password[i]==':'||password[i]=='!')){
+            special = true;
+        }
+    }
+    // if(!regex_search(password, symbol)){
+    //     return false;
+    // }
+    if(!(upper && lower && number && special)){
         return false;
     }
-    if(!regex_search(password, number)){
-        return false;
-    }
-    if(!regex_search(password, symbol)){
-        return false;
-    }
-    if(!regex_search(password, length)){
-        return false;
-    }
-    cout << password << endl;
+    printf("%s\n", password.c_str());
     return true;
 }
 
@@ -43,13 +72,15 @@ int main(){
         3. At least one Lowercase
         4. At least one special character
 
-        mpicxx -Wall -Werror -O3
+        Chipotle also accepts non-ASCII characters, so long
+        as the password still meets the requirements above.
+        Moreover, non-ASCII characters are not counted in 
+        the special character condition.
+
+        ex: *7¡Vamos! is a valid password
+            7Vamos is not a valid password
+
     */
-
-    // MPI_Init(NULL,NULL); //
-
-    // MPI_Comm_size(MPI_COMM_WORLD,&num_procs); //
-    // MPI_Comm_rank(MPI_COMM_WORLD,&proc_rank); //
 
     int count = 0;
     string password;
@@ -58,10 +89,7 @@ int main(){
             count++;
         }
     }
-    //if (debug) cout << "I am process " << proc_rank << " of " << num_procs << endl;
     printf("Valid passwords: %i\n", count);
 
-
-    // MPI_Finalize(); //
     exit(0);
 }
